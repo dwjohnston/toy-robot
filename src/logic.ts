@@ -1,23 +1,15 @@
-import { Position, TABLE_SIZE, InvalidPositionError, Command, DIRECTION_TABLE, DIRECTION_STRINGS } from "./types";
+import { Position, TABLE_SIZE,  Command, getStringFromDirection, getPositionDeltaFromDirection,  } from "./types";
+import { validatePosition } from "./validatePosition";
 
-
-export function validatePosition(position: Position): boolean {
-    if (position.x < 0 || position.y < 0 || position.x >= TABLE_SIZE || position.y >= TABLE_SIZE) {
-        return false
-    }
-
-    else return true;
-}
 
 export function place(position: Position) {
     if (validatePosition(position)) {
         return position;
     }
-    else throw new InvalidPositionError(); 
+    else return null; 
 }
 
-export function rotate(position: Position, clockWise: boolean): Position {
-
+export function rotate( position: Position, clockWise: boolean,): Position {
     const newDirection = (position.direction + 4 + (clockWise ? 1 : -1)) % 4;
 
     return {
@@ -28,10 +20,10 @@ export function rotate(position: Position, clockWise: boolean): Position {
 }
 
 export function move(position: Position): Position {
-    const positionDelta = DIRECTION_TABLE[position.direction];
+    const positionDelta = getPositionDeltaFromDirection(position.direction);
     const newPosition = {
-        x: position + positionDelta.x,
-        y: position = positionDelta.y,
+        x: position.x + positionDelta.x,
+        y: position.y + positionDelta.y,
         direction: position.direction
     }
 
@@ -43,8 +35,9 @@ export function move(position: Position): Position {
 
 
 export function formatReport(position: Position) : string {
-    return `${position.y},${position.x},${DIRECTION_STRINGS[position.direction]}`;
+    return `${position.x},${position.y},${getStringFromDirection(position.direction)}`;
 }
-export function report(position: Position) {
+export function report(position: Position) : Position {
     console.info(formatReport(position))
+    return position; 
 }
